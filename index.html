@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Add study tasks, keep them organized, and track what you have completed." />
+  <meta name="theme-color" content="#1354c5" />
+  <title>Jbrains.Tech Study Planner</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#tasks">
+        <span class="brand-icon" aria-hidden="true">
+          <img src="./jbrains-tech-logo.jpeg" alt="" />
+        </span>
+        <span><strong>Jbrains.Tech</strong><small>Student Study Planner</small></span>
+      </a>
+
+      <nav class="nav-links" aria-label="Planner pages">
+        <button class="nav-link active" type="button" data-view="tasks" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">☷</span><span>My Tasks</span>
+        </button>
+        <button class="nav-link" type="button" data-view="study-dashboard">
+          <span class="nav-icon" aria-hidden="true">✦</span><span>Study Overview</span>
+        </button>
+        <button class="nav-link" type="button" data-view="insights">
+          <span class="nav-icon" aria-hidden="true">◌</span><span>Insights</span>
+        </button>
+
+        <hr class="nav-divider" aria-hidden="true" />
+
+        <button class="nav-link" type="button" data-view="students">
+          <span class="nav-icon" aria-hidden="true">👥</span><span>Students</span>
+        </button>
+        <button class="nav-link" type="button" data-view="attendance">
+          <span class="nav-icon" aria-hidden="true">✔</span><span>Attendance</span>
+        </button>
+      </nav>
+    </aside>
+
+    <button class="sidebar-scrim" id="sidebar-scrim" type="button" aria-label="Close navigation"></button>
+
+    <div class="main-shell">
+      <header class="topbar">
+        <button class="icon-button menu-button" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+        <div class="topbar-actions">
+          <span class="topbar-date" id="today-date"></span>
+          <div class="profile-menu-wrapper">
+            <button class="student-profile" id="profile-menu-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Open account menu">
+              <span class="avatar" aria-hidden="true">ST</span>
+              <span class="profile-name">Student</span>
+              <svg class="profile-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+            </button>
+            <div class="profile-dropdown" id="profile-dropdown" hidden role="menu" aria-label="Account options">
+              <div class="profile-dropdown-header">
+                <span class="profile-dropdown-avatar" aria-hidden="true">ST</span>
+                <div>
+                  <strong class="profile-dropdown-name">Student</strong>
+                  <span class="profile-dropdown-role">Study Planner</span>
+                </div>
+              </div>
+              <hr class="profile-dropdown-divider" />
+              <button class="profile-dropdown-item" id="change-password-btn" type="button" role="menuitem">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a5 5 0 0 0-5 5v1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-1V7a5 5 0 0 0-5-5zm-3 5V7a3 3 0 0 1 6 0v1H7zm3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+                Change Password
+              </button>
+              <button class="profile-dropdown-item profile-dropdown-item--danger" id="logout-btn" type="button" role="menuitem">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h3M13 14l3-4-3-4M16 10H7"/></svg>
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="content" id="tasks">
+        <section id="task-view" aria-labelledby="page-title">
+          <div class="welcome-row">
+            <div>
+              <p class="eyebrow">JBrains.Tech STUDY PLANNER</p>
+              <h1 id="page-title">My Study Tasks</h1>
+              <p class="welcome-copy">Add assignments, keep track of your work, and mark tasks complete as you go.</p>
+            </div>
+            <button class="primary-button add-task-top" type="button" data-open-modal>
+              <span aria-hidden="true">＋</span> Add Task
+            </button>
+          </div>
+
+          <section class="tasks-section" aria-labelledby="task-section-title">
+            <div class="section-heading">
+              <div>
+                <h2 id="task-section-title">Task List</h2>
+                <p>Tasks are saved in this browser.</p>
+              </div>
+              <span class="result-count" id="result-count"></span>
+            </div>
+
+            <div class="empty-state" id="empty-state">
+              <div class="empty-illustration" aria-hidden="true">
+                <svg viewBox="0 0 96 96">
+                  <rect x="22" y="16" width="50" height="62" rx="9" fill="#eaf1ff"/>
+                  <rect x="31" y="28" width="34" height="5" rx="2.5" fill="#96b9f4"/>
+                  <rect x="31" y="40" width="28" height="5" rx="2.5" fill="#c1d5f7"/>
+                  <rect x="31" y="52" width="23" height="5" rx="2.5" fill="#c1d5f7"/>
+                  <circle cx="68" cy="68" r="15" fill="#1763dc"/>
+                  <path d="M68 60v16M60 68h16" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 id="empty-title">No study tasks yet</h3>
+              <p id="empty-description">Add your first task to get started. Include a task title and the subject or course.</p>
+              <button class="primary-button" type="button" data-open-modal><span aria-hidden="true">＋</span> Add Task</button>
+            </div>
+
+            <ul class="task-list" id="task-list" aria-live="polite"></ul>
+          </section>
+        </section>
+
+        <section class="study-dashboard-view" id="study-dashboard-view" hidden>
+          <div class="welcome-row">
+            <div>
+              <p class="eyebrow">YOUR STUDY SPACE</p>
+              <h1>Hello, Student</h1>
+              <p class="welcome-copy">A quick look at your study progress and what to work on next.</p>
+            </div>
+            <button class="primary-button add-task-top" type="button" data-open-modal><span aria-hidden="true">＋</span> Add Task</button>
+          </div>
+
+          <div class="study-dashboard-grid">
+            <div class="study-main-column">
+              <section class="recommendation-card" aria-labelledby="recommendation-title">
+                <div class="recommendation-heading">
+                  <span class="recommendation-icon" aria-hidden="true">✦</span>
+                  <h2 id="recommendation-title">Study Recommendations</h2>
+                </div>
+                <p id="recommendation-copy">Get a focused suggestion based on your current tasks and priorities.</p>
+                <button class="recommendation-button" id="generate-recommendations" type="button"><span aria-hidden="true">✧</span> Generate Recommendations</button>
+              </section>
+
+              <section class="priority-section" aria-labelledby="priority-title">
+                <div class="study-section-heading">
+                  <h2 id="priority-title">Priority Tasks</h2>
+                  <button class="text-button" type="button" data-view="tasks">View all <span aria-hidden="true">↗</span></button>
+                </div>
+                <ul class="priority-task-list" id="priority-task-list" aria-live="polite"></ul>
+              </section>
+
+              <section class="courses-section" aria-labelledby="courses-title">
+                <div class="study-section-heading">
+                  <h2 id="courses-title">Your Courses</h2>
+                  <button class="text-button" type="button" data-open-modal>Add a task <span aria-hidden="true">＋</span></button>
+                </div>
+                <div class="course-grid" id="course-grid"></div>
+              </section>
+
+              <section class="lectures-section" aria-labelledby="lectures-title">
+                <div class="study-section-heading">
+                  <div>
+                    <h2 id="lectures-title">Lectures</h2>
+                    <p class="section-hint">Keep lecture topics and dates alongside your study tasks.</p>
+                  </div>
+                  <button class="primary-button lecture-add-button" id="open-lecture-modal" type="button"><span aria-hidden="true">＋</span> Add Lecture</button>
+                </div>
+                <ul class="lecture-list" id="lecture-list" aria-live="polite"></ul>
+              </section>
+            </div>
+
+            <aside class="study-side-column">
+              <section class="study-panel session-panel" aria-labelledby="session-title">
+                <h2 id="session-title"><span aria-hidden="true">◷</span> Study Session</h2>
+                <label for="session-course">Course</label>
+                <select id="session-course"><option value="">Select a course</option></select>
+                <label for="session-duration">Duration</label>
+                <select id="session-duration">
+                  <option value="25">25 minutes</option>
+                  <option value="50">50 minutes</option>
+                  <option value="75">75 minutes</option>
+                </select>
+                <strong class="study-timer" id="study-timer" aria-live="off">25:00</strong>
+                <p class="session-status" id="session-status">Select a course to begin.</p>
+                <div class="session-progress" role="progressbar" aria-label="Study session progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="session-progress-fill"></span></div>
+                <div class="session-actions">
+                  <button class="secondary-button" id="reset-session" type="button">Reset</button>
+                  <button class="primary-button" id="toggle-session" type="button" disabled><span aria-hidden="true">▶</span> Start</button>
+                </div>
+              </section>
+
+              <section class="study-panel progress-panel" aria-labelledby="progress-title">
+                <div class="progress-heading">
+                  <h2 id="progress-title">Tasks Progress</h2><span class="progress-check" aria-hidden="true">✓</span>
+                </div>
+                <div class="progress-stat"><span>Completed</span><strong id="dashboard-completed-count">0/0</strong></div>
+                <div class="course-progress-track" role="progressbar" aria-label="Task completion progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="dashboard-progress-fill"></span></div>
+                <p class="progress-caption" id="dashboard-progress-caption">Add a task to start tracking your progress.</p>
+                <button class="text-button progress-link" type="button" data-view="insights">View insights <span aria-hidden="true">→</span></button>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section class="insights-view" id="insights-view" hidden>
+          <div class="insights-intro">
+            <p class="eyebrow">YOUR PROGRESS, AT A GLANCE</p>
+            <h1>Study Insights</h1>
+            <p class="welcome-copy">A clear snapshot of your tasks and course progress.</p>
+          </div>
+          <div class="insights-grid">
+            <article class="insight-card" aria-labelledby="completion-insight-title">
+              <h2 id="completion-insight-title">Task Completion</h2>
+              <p class="insight-description">Your completed study tasks so far.</p>
+              <div class="completion-ring" id="insight-completion-ring" role="img" aria-label="0% of tasks completed"><span id="insight-completion-percent">0%</span></div>
+              <p class="insight-footnote" id="insight-completion-detail">0 of 0 tasks completed</p>
+              <button class="insight-link" type="button" data-view="tasks">See your tasks <span aria-hidden="true">↗</span></button>
+            </article>
+            <article class="insight-card" aria-labelledby="course-insight-title">
+              <h2 id="course-insight-title">Course Progress</h2>
+              <p class="insight-description">Completion across your tracked courses.</p>
+              <div class="course-insight-summary"><strong id="insight-course-count">0</strong><span>courses tracked</span></div>
+              <div class="insight-course-list" id="insight-course-list"></div>
+              <button class="insight-link" type="button" data-view="study-dashboard">Explore courses <span aria-hidden="true">↗</span></button>
+            </article>
+            <article class="insight-card" aria-labelledby="workload-insight-title">
+              <h2 id="workload-insight-title">Open Workload</h2>
+              <p class="insight-description">Tasks still waiting for your attention.</p>
+              <div class="workload-total"><strong id="insight-open-count">0</strong><span>open tasks</span></div>
+              <div class="priority-breakdown" id="insight-priority-breakdown"></div>
+              <button class="insight-link" type="button" data-view="tasks">Review your tasks <span aria-hidden="true">↗</span></button>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <!-- ── Students section ─────────────────────────────────────────────── -->
+      <section id="students-view" hidden aria-labelledby="students-page-title">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow">PORTAL</p>
+            <h1 id="students-page-title">Students</h1>
+            <p class="welcome-copy">View, add, and manage the student roster.</p>
+          </div>
+          <button class="primary-button" type="button" id="open-add-student-modal">
+            <span aria-hidden="true">＋</span> Add Student
+          </button>
+        </div>
+        <div class="portal-toolbar">
+          <div class="portal-search-box">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l3.5 3.5"/></svg>
+            <input type="search" id="student-search" placeholder="Search by name, ID or course…" aria-label="Search students" />
+          </div>
+          <span class="portal-count" id="student-count"></span>
+        </div>
+        <div class="portal-table-wrap">
+          <table class="portal-table" id="students-table" aria-label="Student roster">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Level</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th aria-label="Actions"></th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody">
+              <tr class="portal-loading-row"><td colspan="8">Loading students…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Attendance section ────────────────────────────────────────────── -->
+      <section id="attendance-view" hidden aria-labelledby="attendance-page-title">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow">PORTAL</p>
+            <h1 id="attendance-page-title">Attendance</h1>
+            <p class="welcome-copy">Mark and review daily student attendance.</p>
+          </div>
+          <div class="att-date-group">
+            <label for="att-date" class="att-date-label">Date</label>
+            <input type="date" id="att-date" aria-label="Attendance date" />
+          </div>
+        </div>
+
+        <div class="portal-toolbar">
+          <div class="att-status-filters" role="group" aria-label="Filter by status">
+            <button class="att-filter-btn active" data-filter="all" type="button">All</button>
+            <button class="att-filter-btn" data-filter="Present" type="button">Present</button>
+            <button class="att-filter-btn" data-filter="Absent" type="button">Absent</button>
+            <button class="att-filter-btn" data-filter="Late" type="button">Late</button>
+          </div>
+          <span class="portal-count" id="att-count"></span>
+        </div>
+
+        <div class="portal-table-wrap">
+          <table class="portal-table" id="attendance-table" aria-label="Attendance sheet">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Level</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-tbody">
+              <tr class="portal-loading-row"><td colspan="5">Select a date to load attendance.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="att-save-bar" id="att-save-bar" hidden>
+          <span id="att-save-info"></span>
+          <button class="primary-button" id="save-attendance-btn" type="button">Save Attendance</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+  <div class="modal-backdrop" id="add-student-modal" hidden>
+    <section class="task-modal" role="dialog" aria-modal="true" aria-labelledby="add-student-modal-title" style="width:min(100%,520px)">
+      <div class="modal-header">
+        <h2 id="add-student-modal-title">Add Student</h2>
+        <button class="icon-button close-modal" id="close-add-student-modal" type="button" aria-label="Close dialog">×</button>
+      </div>
+      <form class="task-form" id="add-student-form" novalidate>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+          <div>
+            <label for="as-name">Full Name <span aria-hidden="true">*</span></label>
+            <input id="as-name" name="name" type="text" maxlength="100" placeholder="e.g. Kwame Mensah" required />
+          </div>
+          <div>
+            <label for="as-id">Student ID <span aria-hidden="true">*</span></label>
+            <input id="as-id" name="id" type="text" maxlength="20" placeholder="e.g. ST009" required />
+          </div>
+          <div>
+            <label for="as-course">Course <span aria-hidden="true">*</span></label>
+            <input id="as-course" name="course" type="text" maxlength="80" placeholder="e.g. Computer Science" required />
+          </div>
+          <div>
+            <label for="as-level">Level</label>
+            <select id="as-level" name="level">
+              <option value="">Select</option>
+              <option value="100">Level 100</option>
+              <option value="200">Level 200</option>
+              <option value="300">Level 300</option>
+              <option value="400">Level 400</option>
+              <option value="postgrad">Postgraduate</option>
+            </select>
+          </div>
+          <div>
+            <label for="as-gender">Gender</label>
+            <select id="as-gender" name="gender">
+              <option value="">Prefer not to say</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="as-email">Email</label>
+            <input id="as-email" name="email" type="email" maxlength="120" placeholder="student@example.com" />
+          </div>
+          <div style="grid-column:1/-1">
+            <label for="as-phone">Phone</label>
+            <input id="as-phone" name="phone" type="tel" maxlength="20" placeholder="+233 55 000 0000" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="primary-button" type="submit">Save Student</button>
+          <button class="secondary-button" id="cancel-add-student-modal" type="button">Cancel</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="task-modal" hidden>
+    <section class="task-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h2 id="modal-title">Add a Study Task</h2>
+        <button class="icon-button close-modal" id="close-modal" type="button" aria-label="Close dialog">×</button>
+      </div>
+      <form class="task-form" id="task-form">
+        <label for="task-title">Task Title <span aria-hidden="true">*</span></label>
+        <input id="task-title" name="title" type="text" maxlength="80" placeholder="What needs to be done?" required />
+
+        <label for="task-subject">Subject or Course <span aria-hidden="true">*</span></label>
+        <input id="task-subject" name="subject" type="text" maxlength="60" placeholder="Enter a subject or course" required />
+
+        <label for="task-priority">Priority <span class="optional">(Optional)</span></label>
+        <select id="task-priority" name="priority">
+          <option value="High">High</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="Low">Low</option>
+        </select>
+
+        <div class="modal-actions">
+          <button class="primary-button" type="submit">Save Task</button>
+          <button class="secondary-button" id="cancel-modal" type="button">Cancel</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="lecture-modal" hidden>
+    <section class="task-modal" role="dialog" aria-modal="true" aria-labelledby="lecture-modal-title">
+      <div class="modal-header">
+        <h2 id="lecture-modal-title">Add a Lecture</h2>
+        <button class="icon-button close-modal" id="close-lecture-modal" type="button" aria-label="Close dialog">×</button>
+      </div>
+      <form class="task-form" id="lecture-form">
+        <label for="lecture-title">Lecture Title <span aria-hidden="true">*</span></label>
+        <input id="lecture-title" name="title" type="text" maxlength="80" placeholder="Enter the lecture topic" required />
+
+        <label for="lecture-course">Subject or Course <span aria-hidden="true">*</span></label>
+        <input id="lecture-course" name="course" type="text" maxlength="60" placeholder="Enter a subject or course" required />
+
+        <label for="lecture-date">Lecture Date <span class="optional">(Optional)</span></label>
+        <input id="lecture-date" name="date" type="date" />
+
+        <div class="modal-actions">
+          <button class="primary-button" type="submit">Save Lecture</button>
+          <button class="secondary-button" id="cancel-lecture-modal" type="button">Cancel</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="change-password-modal" hidden>
+    <section class="task-modal" role="dialog" aria-modal="true" aria-labelledby="change-password-modal-title">
+      <div class="modal-header">
+        <h2 id="change-password-modal-title">Change Password</h2>
+        <button class="icon-button close-modal" id="close-change-password-modal" type="button" aria-label="Close dialog">×</button>
+      </div>
+      <form class="task-form" id="change-password-form" novalidate>
+        <label for="current-password">Current Password <span aria-hidden="true">*</span></label>
+        <input id="current-password" name="current-password" type="password" placeholder="Enter current password" autocomplete="current-password" required />
+
+        <label for="new-password">New Password <span aria-hidden="true">*</span></label>
+        <input id="new-password" name="new-password" type="password" placeholder="At least 8 characters" autocomplete="new-password" required minlength="8" />
+
+        <label for="confirm-password">Confirm New Password <span aria-hidden="true">*</span></label>
+        <input id="confirm-password" name="confirm-password" type="password" placeholder="Repeat new password" autocomplete="new-password" required />
+
+        <div class="modal-actions">
+          <button class="primary-button" type="submit">Update Password</button>
+          <button class="secondary-button" id="cancel-change-password-modal" type="button">Cancel</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
