@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+student_attendance.db
+student_attendance.db-shm
+student_attendance.db-wal

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Register a new student account on Jbrains.Tech Study Planner." />
+  <meta name="theme-color" content="#1354c5" />
+  <title>Register — Jbrains.Tech Study Planner</title>
+  <style>
+    :root {
+      --blue: #1763dc;
+      --blue-dark: #1049a7;
+      --navy: #102445;
+      --text: #17243b;
+      --muted: #64748b;
+      --line: #e6ebf2;
+      --red: #dc3639;
+      --green: #159b63;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Left panel — fixed, never scrolls ──────────────── */
+    .auth-left {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 56px;
+      background: linear-gradient(160deg, #0d3d8c 0%, #1763dc 50%, #3494f5 100%);
+      color: #fff;
+      overflow: hidden;
+    }
+    .auth-left::before,
+    .auth-left::after {
+      content: ""; position: absolute; border-radius: 50%;
+      opacity: .1; background: #fff;
+    }
+    .auth-left::before { width: 500px; height: 500px; top: -160px; right: -160px; }
+    .auth-left::after  { width: 280px; height: 280px; bottom: -60px; left: -80px; }
+
+    .auth-left-inner { position: relative; z-index: 1; max-width: 360px; }
+
+    .auth-brand {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 52px; text-decoration: none; color: #fff;
+    }
+    .auth-brand-icon {
+      display: grid; width: 52px; height: 52px; flex: 0 0 52px;
+      place-items: center; border-radius: 14px;
+      background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.28);
+      overflow: hidden;
+    }
+    .auth-brand-icon img { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: screen; }
+    .auth-brand strong { display: block; font-size: 18px; letter-spacing: -.3px; }
+    .auth-brand small  { display: block; margin-top: 3px; color: rgba(255,255,255,.7); font-size: 11px; }
+
+    .auth-hero-tag {
+      display: inline-block; margin-bottom: 18px; padding: 4px 12px;
+      border-radius: 999px; background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.9); font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    }
+    .auth-left h1 {
+      font-size: clamp(24px, 2.8vw, 34px); font-weight: 800;
+      line-height: 1.2; letter-spacing: -.5px; margin-bottom: 16px;
+    }
+    .auth-left > .auth-left-inner > p {
+      color: rgba(255,255,255,.75); font-size: 13.5px;
+      line-height: 1.65; margin-bottom: 38px;
+    }
+
+    .auth-steps { display: grid; gap: 16px; }
+    .auth-step  { display: flex; align-items: flex-start; gap: 14px; }
+    .step-num {
+      display: grid; width: 30px; height: 30px; flex: 0 0 30px;
+      place-items: center; border-radius: 50%;
+      background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3);
+      font-size: 12px; font-weight: 800; color: #fff;
+    }
+    .step-text strong { display: block; font-size: 13px; color: #fff; }
+    .step-text span   { display: block; font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; }
+
+    /* ── Right panel — scrollable, offset by fixed left ── */
+    .auth-right {
+      margin-left: 50%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 48px 40px;
+      background: #f7f9fc;
+      overflow-y: auto;
+    }
+
+    .auth-form-shell { width: min(480px, 100%); }
+
+    .auth-form-header { margin-bottom: 26px; }
+    .auth-form-header h2 {
+      font-size: 22px; font-weight: 800; letter-spacing: -.4px; color: var(--navy); margin-bottom: 5px;
+    }
+    .auth-form-header p { color: var(--muted); font-size: 13px; }
+
+    /* notices */
+    .auth-notice {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 14px; border-radius: 10px; font-size: 12.5px; margin-bottom: 20px;
+    }
+    .auth-notice svg { width: 16px; height: 16px; flex: 0 0 16px; margin-top: 1px; }
+    .auth-notice--success { background: #edfbf4; border: 1px solid #b6e9d0; color: #0f6b44; }
+    .auth-notice--success svg { fill: #0f6b44; }
+    .auth-notice--error   { background: #fff3f3; border: 1px solid #f3cbcb; color: #bd292d; }
+    .auth-notice--error svg { fill: #bd292d; }
+    .auth-notice[hidden] { display: none; }
+
+    /* form grid */
+    .auth-form { display: grid; gap: 16px; }
+    .form-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .form-group { display: grid; gap: 6px; }
+    .form-group label {
+      color: #3a4a62; font-size: 12px; font-weight: 700; letter-spacing: .01em;
+    }
+    .form-group label .req { color: var(--red); margin-left: 2px; }
+    .form-group label .opt { color: #98a6bb; font-weight: 400; font-size: 10px; margin-left: 4px; }
+
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-icon {
+      position: absolute; left: 13px; width: 16px; height: 16px;
+      fill: none; stroke: #a0afc4; stroke-width: 1.8; stroke-linecap: round;
+      pointer-events: none; flex-shrink: 0;
+    }
+
+    .auth-form input,
+    .auth-form select {
+      width: 100%; min-height: 46px;
+      padding: 0 14px 0 40px;
+      border: 1.5px solid #dce3ed; border-radius: 10px;
+      outline: 0; background: #fff; color: var(--text);
+      font: inherit; font-size: 13px;
+      transition: border-color .15s, box-shadow .15s;
+      box-shadow: 0 1px 3px rgba(17,38,72,.04);
+      appearance: none;
+    }
+    .auth-form input::placeholder { color: #b0bac9; }
+    .auth-form input:focus,
+    .auth-form select:focus {
+      border-color: var(--blue); box-shadow: 0 0 0 3.5px rgba(23,99,220,.13);
+    }
+    .auth-form input.is-error,
+    .auth-form select.is-error {
+      border-color: var(--red); box-shadow: 0 0 0 3px rgba(220,54,57,.1);
+    }
+
+    /* select chevron */
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: ""; pointer-events: none;
+      position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+      border: 5px solid transparent; border-top: 6px solid #a0afc4;
+      margin-top: 3px;
+    }
+
+    .field-err { color: var(--red); font-size: 11px; min-height: 15px; }
+
+    /* divider label */
+    .form-section-label {
+      display: flex; align-items: center; gap: 10px;
+      color: #8898b4; font-size: 10px; font-weight: 700; letter-spacing: .1em;
+      margin: 4px 0 -4px;
+    }
+    .form-section-label::before,
+    .form-section-label::after { content: ""; flex: 1; height: 1px; background: #e4eaf4; }
+
+    /* password strength */
+    .pw-strength { display: grid; gap: 5px; margin-top: 2px; }
+    .pw-strength-bar { display: flex; gap: 4px; }
+    .pw-seg {
+      flex: 1; height: 4px; border-radius: 99px; background: #e4eaf4;
+      transition: background .25s;
+    }
+    .pw-strength-label { font-size: 10px; color: #98a6bb; }
+
+    /* password toggle */
+    .pw-toggle {
+      position: absolute; right: 11px; display: grid; width: 30px; height: 30px;
+      place-items: center; border: 0; border-radius: 7px; background: transparent;
+      color: #a0afc4; cursor: pointer; transition: background .12s;
+    }
+    .pw-toggle:hover { background: #f0f4fb; color: var(--text); }
+    .pw-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+
+    /* submit */
+    .auth-submit {
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      width: 100%; min-height: 48px; padding: 0 24px; margin-top: 4px;
+      border: none; border-radius: 11px;
+      background: linear-gradient(135deg, #1763dc 0%, #1049a7 100%);
+      color: #fff; font: inherit; font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: .01em;
+      box-shadow: 0 4px 14px rgba(23,99,220,.30);
+      transition: box-shadow .15s, transform .1s;
+    }
+    .auth-submit:hover  { box-shadow: 0 6px 20px rgba(23,99,220,.38); transform: translateY(-1px); }
+    .auth-submit:active { transform: translateY(0); }
+    .auth-submit:disabled { background: #a4b3ce; box-shadow: none; cursor: not-allowed; transform: none; }
+
+    .spinner {
+      display: none; width: 17px; height: 17px;
+      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .65s linear infinite;
+    }
+    .auth-submit.loading .spinner { display: block; }
+    .auth-submit.loading .btn-label { opacity: .75; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* footer */
+    .auth-footer { margin-top: 20px; text-align: center; color: var(--muted); font-size: 13px; }
+    .auth-footer a { color: var(--blue); font-weight: 700; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ─── */
+    @media (max-width: 860px) {
+      .auth-left { display: none; }
+      .auth-right {
+        margin-left: 0;
+        padding: 36px 24px;
+        background: linear-gradient(160deg,#e8f1fd 0%,#f5f7fb 100%);
+        min-height: 100vh;
+      }
+    }
+    @media (max-width: 540px) {
+      .form-row { grid-template-columns: 1fr; }
+      .auth-right { padding: 28px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left panel -->
+  <div class="auth-left" aria-hidden="true">
+    <div class="auth-left-inner">
+      <a class="auth-brand" href="login.html">
+        <span class="auth-brand-icon"><img src="./jbrains-tech-logo.jpeg" alt="" /></span>
+        <span><strong>Jbrains.Tech</strong><small>Student Study Planner</small></span>
+      </a>
+      <span class="auth-hero-tag">✦ JOIN THE PLATFORM</span>
+      <h1>Create your<br>student account<br>in minutes.</h1>
+      <p>Fill in your details below to get access to the full suite of study planning tools built for Jbrains.Tech students.</p>
+      <div class="auth-steps">
+        <div class="auth-step">
+          <span class="step-num">1</span>
+          <div class="step-text">
+            <strong>Enter your details</strong>
+            <span>Name, student ID, course and level</span>
+          </div>
+        </div>
+        <div class="auth-step">
+          <span class="step-num">2</span>
+          <div class="step-text">
+            <strong>Set a secure password</strong>
+            <span>Minimum 8 characters required</span>
+          </div>
+        </div>
+        <div class="auth-step">
+          <span class="step-num">3</span>
+          <div class="step-text">
+            <strong>Start planning</strong>
+            <span>Access tasks, timer, and insights instantly</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="auth-right">
+    <div class="auth-form-shell">
+
+      <div class="auth-form-header">
+        <h2>Create an account</h2>
+        <p>Fill in all required fields to register as a student.</p>
+      </div>
+
+      <!-- Success notice (shown after registration) -->
+      <div class="auth-notice auth-notice--success" id="reg-success" hidden role="status">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zm3.3 5.8-3.8 5a.75.75 0 0 1-1.1.1L6.2 10.6a.75.75 0 1 1 1.1-1l1.6 1.7 3.3-4.4a.75.75 0 1 1 1.2.9z"/></svg>
+        Registration successful! Redirecting to login…
+      </div>
+
+      <!-- Error banner -->
+      <div class="auth-notice auth-notice--error" id="reg-error" hidden role="alert">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zm-.75 4.75a.75.75 0 0 1 1.5 0v4a.75.75 0 0 1-1.5 0v-4zm.75 7.25a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+        <span id="reg-error-text">Something went wrong. Please try again.</span>
+      </div>
+
+      <form class="auth-form" id="reg-form" novalidate>
+
+        <!-- ── Personal details ─────────────────────── -->
+        <div class="form-section-label">PERSONAL DETAILS</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-name">Full Name <span class="req" aria-hidden="true">*</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <circle cx="10" cy="6" r="3.5"/>
+                <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"/>
+              </svg>
+              <input id="reg-name" name="name" type="text" maxlength="100"
+                placeholder="e.g. Kwame Mensah" autocomplete="name" required />
+            </div>
+            <span class="field-err" id="name-error" role="alert"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-id">Student ID <span class="req" aria-hidden="true">*</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <rect x="2" y="4" width="16" height="12" rx="2"/>
+                <circle cx="7" cy="10" r="2"/>
+                <path d="M11 8h4M11 12h3"/>
+              </svg>
+              <input id="reg-id" name="student_id" type="text" maxlength="20"
+                placeholder="e.g. ST001" autocomplete="off" required />
+            </div>
+            <span class="field-err" id="id-error" role="alert"></span>
+          </div>
+        </div>
+
+        <!-- ── Academic details ─────────────────────── -->
+        <div class="form-section-label">ACADEMIC DETAILS</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-course">Course / Programme <span class="req" aria-hidden="true">*</span></label>
+            <div class="input-wrap select-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M10 2l8 4-8 4-8-4 8-4zM2 10l8 4 8-4M2 14l8 4 8-4"/>
+              </svg>
+              <select id="reg-course" name="course" required>
+                <option value="">Select a course</option>
+                <option>Computer Science</option>
+                <option>Information Technology</option>
+                <option>Software Engineering</option>
+                <option>Mathematics</option>
+                <option>Physics</option>
+                <option>Business Administration</option>
+                <option>Accounting</option>
+                <option>English Literature</option>
+                <option>Economics</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <span class="field-err" id="course-error" role="alert"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-level">Level / Year <span class="req" aria-hidden="true">*</span></label>
+            <div class="input-wrap select-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 4h12v2H4zM4 9h10v2H4zM4 14h8v2H4z"/>
+              </svg>
+              <select id="reg-level" name="level" required>
+                <option value="">Select a level</option>
+                <option value="100">Level 100</option>
+                <option value="200">Level 200</option>
+                <option value="300">Level 300</option>
+                <option value="400">Level 400</option>
+                <option value="postgrad">Postgraduate</option>
+              </select>
+            </div>
+            <span class="field-err" id="level-error" role="alert"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-gender">Gender <span class="opt">(optional)</span></label>
+          <div class="input-wrap select-wrap">
+            <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+              <circle cx="10" cy="8" r="4"/>
+              <path d="M13.5 4.5 16 2m0 0h-2.5M16 2v2.5M6.5 4.5 4 2m0 0h2.5M4 2v2.5"/>
+            </svg>
+            <select id="reg-gender" name="gender">
+              <option value="">Prefer not to say</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ── Contact details ─────────────────────── -->
+        <div class="form-section-label">CONTACT DETAILS</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-email">Email Address <span class="req" aria-hidden="true">*</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <rect x="2.5" y="4.5" width="15" height="11" rx="2" ry="2"/>
+                <path d="M2.5 7l7.09 4.6a1 1 0 0 0 1.08 0L17.5 7"/>
+              </svg>
+              <input id="reg-email" name="email" type="email" maxlength="120"
+                placeholder="you@example.com" autocomplete="email" inputmode="email" required />
+            </div>
+            <span class="field-err" id="email-error" role="alert"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-phone">Phone Number <span class="opt">(optional)</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M3 4a1 1 0 0 1 1-1h2.5a1 1 0 0 1 .97.76l.7 2.8a1 1 0 0 1-.3 1L6.5 8.9A11 11 0 0 0 11.1 13.5l1.34-1.34a1 1 0 0 1 1-.3l2.8.7A1 1 0 0 1 17 13.5V16a1 1 0 0 1-1 1h-1C7.16 17 3 12.84 3 8V7a1 1 0 0 1 0-.2V4z"/>
+              </svg>
+              <input id="reg-phone" name="phone" type="tel" maxlength="20"
+                placeholder="e.g. +233 55 000 0000" autocomplete="tel" inputmode="tel" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Password ─────────────────────────────── -->
+        <div class="form-section-label">SECURITY</div>
+
+        <div class="form-group">
+          <label for="reg-password">Password <span class="req" aria-hidden="true">*</span></label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 2a5 5 0 0 0-5 5v1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-1V7a5 5 0 0 0-5-5zm-3 6V7a3 3 0 0 1 6 0v1H7zm3 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </svg>
+            <input id="reg-password" name="password" type="password" minlength="8"
+              placeholder="Minimum 8 characters" autocomplete="new-password" required />
+            <button class="pw-toggle" type="button" id="toggle-pw" aria-label="Show password" aria-pressed="false">
+              <svg id="pw-eye" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10z"/>
+                <circle cx="10" cy="10" r="2.5"/>
+              </svg>
+            </button>
+          </div>
+          <!-- strength indicator -->
+          <div class="pw-strength" id="pw-strength" aria-live="polite">
+            <div class="pw-strength-bar">
+              <div class="pw-seg" id="seg1"></div>
+              <div class="pw-seg" id="seg2"></div>
+              <div class="pw-seg" id="seg3"></div>
+              <div class="pw-seg" id="seg4"></div>
+            </div>
+            <span class="pw-strength-label" id="pw-strength-label"></span>
+          </div>
+          <span class="field-err" id="pw-error" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-confirm">Confirm Password <span class="req" aria-hidden="true">*</span></label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 2a5 5 0 0 0-5 5v1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-1V7a5 5 0 0 0-5-5zm-3 6V7a3 3 0 0 1 6 0v1H7zm3 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </svg>
+            <input id="reg-confirm" name="confirm_password" type="password"
+              placeholder="Repeat your password" autocomplete="new-password" required />
+          </div>
+          <span class="field-err" id="confirm-error" role="alert"></span>
+        </div>
+
+        <button class="auth-submit" type="submit" id="reg-submit-btn">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn-label">Create Account</span>
+        </button>
+
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? <a href="login.html">Sign in here</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ── Password show/hide ────────────────────────────────────────────────────
+    const pwInput  = document.getElementById("reg-password");
+    const pwToggle = document.getElementById("toggle-pw");
+    const pwEye    = document.getElementById("pw-eye");
+    const EYE_OPEN   = `<path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10z"/><circle cx="10" cy="10" r="2.5"/>`;
+    const EYE_CLOSED = `<path d="M3 3l14 14M10 4.5C5.5 4.5 2 10 2 10s.9 1.6 2.5 3M7.5 15.2C8.3 15.4 9.1 15.5 10 15.5c4.5 0 8-5.5 8-5.5s-.9-1.6-2.5-3"/><circle cx="10" cy="10" r="2.5"/>`;
+
+    pwToggle.addEventListener("click", () => {
+      const showing = pwInput.type === "text";
+      pwInput.type  = showing ? "password" : "text";
+      pwEye.innerHTML = showing ? EYE_OPEN : EYE_CLOSED;
+      pwToggle.setAttribute("aria-pressed", String(!showing));
+      pwToggle.setAttribute("aria-label",   showing ? "Show password" : "Hide password");
+    });
+
+    // ── Password strength ─────────────────────────────────────────────────────
+    const segs   = [1,2,3,4].map(n => document.getElementById("seg" + n));
+    const pwLabel = document.getElementById("pw-strength-label");
+    const STRENGTH_COLORS = ["", "#dc3639", "#f4a923", "#1763dc", "#159b63"];
+    const STRENGTH_LABELS = ["", "Weak", "Fair", "Good", "Strong"];
+
+    function getStrength(val) {
+      if (!val) return 0;
+      let score = 0;
+      if (val.length >= 8)  score++;
+      if (val.length >= 12) score++;
+      if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+      if (/\d/.test(val) && /[^A-Za-z0-9]/.test(val)) score++;
+      return Math.min(score, 4);
+    }
+
+    pwInput.addEventListener("input", () => {
+      const s = getStrength(pwInput.value);
+      segs.forEach((seg, i) => {
+        seg.style.background = i < s ? STRENGTH_COLORS[s] : "#e4eaf4";
+      });
+      pwLabel.textContent = pwInput.value ? STRENGTH_LABELS[s] : "";
+      pwLabel.style.color = STRENGTH_COLORS[s] || "#98a6bb";
+    });
+
+    // ── Form submission ───────────────────────────────────────────────────────
+    const form       = document.getElementById("reg-form");
+    const submitBtn  = document.getElementById("reg-submit-btn");
+    const successEl  = document.getElementById("reg-success");
+    const errorEl    = document.getElementById("reg-error");
+    const errorText  = document.getElementById("reg-error-text");
+
+    function getEl(id) { return document.getElementById(id); }
+    function setErr(inputId, errId, msg) {
+      const input = getEl(inputId);
+      const err   = getEl(errId);
+      input.classList.add("is-error");
+      err.textContent = msg;
+      return input;
+    }
+    function clearAll() {
+      form.querySelectorAll(".is-error").forEach(el => el.classList.remove("is-error"));
+      form.querySelectorAll(".field-err").forEach(el => el.textContent = "");
+      errorEl.hidden = true;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAll();
+
+      const name    = getEl("reg-name").value.trim();
+      const id      = getEl("reg-id").value.trim();
+      const course  = getEl("reg-course").value;
+      const level   = getEl("reg-level").value;
+      const email   = getEl("reg-email").value.trim();
+      const pw      = getEl("reg-password").value;
+      const confirm = getEl("reg-confirm").value;
+
+      let firstError = null;
+      function fail(inputId, errId, msg) {
+        const el = setErr(inputId, errId, msg);
+        if (!firstError) firstError = el;
+      }
+
+      if (!name)   fail("reg-name",   "name-error",   "Full name is required.");
+      if (!id)     fail("reg-id",     "id-error",     "Student ID is required.");
+      if (!course) fail("reg-course", "course-error", "Please select a course.");
+      if (!level)  fail("reg-level",  "level-error",  "Please select a level.");
+
+      if (!email)
+        fail("reg-email", "email-error", "Email address is required.");
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        fail("reg-email", "email-error", "Enter a valid email address.");
+
+      if (!pw)
+        fail("reg-password", "pw-error", "Password is required.");
+      else if (pw.length < 8)
+        fail("reg-password", "pw-error", "Password must be at least 8 characters.");
+
+      if (pw && confirm !== pw)
+        fail("reg-confirm", "confirm-error", "Passwords do not match.");
+
+      if (firstError) { firstError.focus(); return; }
+
+      submitBtn.disabled = true;
+      submitBtn.classList.add("loading");
+
+      try {
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({
+            name,
+            email,
+            password: pw,
+            student_id: id,
+            course,
+            level,
+            gender: getEl("reg-gender").value || null,
+            phone:  getEl("reg-phone").value.trim() || null,
+          }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Registration failed. Please try again.");
+        }
+
+        // Persist name so the header is personalised after login
+        localStorage.setItem("loggedInUser", JSON.stringify({ name, email }));
+
+        successEl.hidden = false;
+        form.style.display = "none";
+        successEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+        // Auto-redirect to login after 3 seconds
+        setTimeout(() => { window.location.href = "login.html?registered=1"; }, 3000);
+
+      } catch (err) {
+        errorText.textContent = err.message || "Registration failed. Please try again.";
+        errorEl.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("loading");
+      }
+    });
+  </script>
+</body>
+</html>

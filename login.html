@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sign in to the Jbrains.Tech Student Study Planner." />
+  <meta name="theme-color" content="#1354c5" />
+  <title>Sign In — Jbrains.Tech Study Planner</title>
+  <style>
+    :root {
+      --blue: #1763dc;
+      --blue-dark: #1049a7;
+      --blue-light: #eaf1ff;
+      --navy: #102445;
+      --text: #17243b;
+      --muted: #64748b;
+      --subtle: #8794a8;
+      --line: #e6ebf2;
+      --canvas: #f5f7fb;
+      --red: #dc3639;
+      --green: #159b63;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Left panel — fixed, never scrolls ──────────────── */
+    .auth-left {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 56px;
+      background: linear-gradient(160deg, #1049a7 0%, #1763dc 45%, #2a85f5 100%);
+      color: #fff;
+      overflow: hidden;
+    }
+
+    /* decorative blobs */
+    .auth-left::before,
+    .auth-left::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      opacity: .12;
+      background: #fff;
+    }
+    .auth-left::before { width: 420px; height: 420px; top: -120px; right: -140px; }
+    .auth-left::after  { width: 300px; height: 300px; bottom: -80px; left: -100px; }
+
+    .auth-left-inner { position: relative; z-index: 1; max-width: 380px; }
+
+    .auth-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 56px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .auth-brand-icon {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      flex: 0 0 52px;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(255,255,255,.18);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,.28);
+      overflow: hidden;
+    }
+    .auth-brand-icon img { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: screen; }
+    .auth-brand strong { display: block; font-size: 18px; letter-spacing: -.3px; }
+    .auth-brand small  { display: block; margin-top: 3px; color: rgba(255,255,255,.7); font-size: 11px; }
+
+    .auth-hero-tag {
+      display: inline-block;
+      margin-bottom: 18px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.9);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .06em;
+    }
+
+    .auth-left h1 {
+      font-size: clamp(26px, 3vw, 36px);
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -.6px;
+      margin-bottom: 16px;
+    }
+    .auth-left p {
+      color: rgba(255,255,255,.78);
+      font-size: 14px;
+      line-height: 1.65;
+      max-width: 340px;
+      margin-bottom: 40px;
+    }
+
+    .auth-features { display: grid; gap: 14px; }
+    .auth-feature {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+    .auth-feature-icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.2);
+      font-size: 18px;
+    }
+    .auth-feature-text strong { display: block; font-size: 13px; color: #fff; }
+    .auth-feature-text span   { display: block; font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; }
+
+    /* ── Right panel — fills remaining half, no scroll ─── */
+    .auth-right {
+      margin-left: 50%;
+      width: 50%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 48px 40px;
+      background: #f7f9fc;
+      overflow: hidden;
+    }
+
+    .auth-form-shell {
+      width: min(420px, 100%);
+    }
+
+    .auth-form-header { margin-bottom: 28px; }
+    .auth-form-header h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .auth-form-header p { color: var(--muted); font-size: 13px; }
+
+    /* notices */
+    .auth-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      margin-bottom: 22px;
+    }
+    .auth-notice svg { width: 16px; height: 16px; flex: 0 0 16px; margin-top: 1px; }
+    .auth-notice--success { background: #edfbf4; border: 1px solid #b6e9d0; color: #0f6b44; }
+    .auth-notice--success svg { fill: #0f6b44; }
+    .auth-notice--error   { background: #fff3f3; border: 1px solid #f3cbcb; color: #bd292d; }
+    .auth-notice--error svg { fill: #bd292d; }
+    .auth-notice[hidden] { display: none; }
+
+    /* form */
+    .auth-form { display: grid; gap: 18px; }
+
+    .form-group { display: grid; gap: 6px; }
+    .form-group label {
+      color: #3a4a62;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+    .form-group label .req { color: var(--red); margin-left: 2px; }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-icon {
+      position: absolute;
+      left: 13px;
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: #a0afc4;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      pointer-events: none;
+      flex-shrink: 0;
+    }
+
+    .auth-form input {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px 0 40px;
+      border: 1.5px solid #dce3ed;
+      border-radius: 10px;
+      outline: 0;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      transition: border-color .15s, box-shadow .15s;
+      box-shadow: 0 1px 3px rgba(17,38,72,.04);
+    }
+    .auth-form input::placeholder { color: #b0bac9; }
+    .auth-form input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3.5px rgba(23,99,220,.13);
+    }
+    .auth-form input.is-error {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(220,54,57,.1);
+    }
+
+    .field-err { color: var(--red); font-size: 11px; min-height: 15px; }
+
+    /* password toggle */
+    .pw-toggle {
+      position: absolute;
+      right: 11px;
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: #a0afc4;
+      cursor: pointer;
+      transition: background .12s;
+    }
+    .pw-toggle:hover { background: #f0f4fb; color: var(--text); }
+    .pw-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+
+    /* forgot */
+    .forgot-row { display: flex; justify-content: flex-end; margin-top: -10px; }
+    .forgot-btn {
+      border: 0; background: transparent; padding: 0;
+      color: var(--blue); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .forgot-btn:hover { text-decoration: underline; }
+
+    /* submit */
+    .auth-submit {
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      width: 100%; min-height: 48px; padding: 0 24px; margin-top: 2px;
+      border: none; border-radius: 11px;
+      background: linear-gradient(135deg, #1763dc 0%, #1049a7 100%);
+      color: #fff; font: inherit; font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: .01em;
+      box-shadow: 0 4px 14px rgba(23,99,220,.30);
+      transition: box-shadow .15s, transform .1s;
+    }
+    .auth-submit:hover  { box-shadow: 0 6px 20px rgba(23,99,220,.38); transform: translateY(-1px); }
+    .auth-submit:active { transform: translateY(0); }
+    .auth-submit:disabled { background: #a4b3ce; box-shadow: none; cursor: not-allowed; transform: none; }
+
+    .spinner {
+      display: none; width: 17px; height: 17px;
+      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .65s linear infinite;
+    }
+    .auth-submit.loading .spinner { display: block; }
+    .auth-submit.loading .btn-label { opacity: .75; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* divider */
+    .auth-divider {
+      display: flex; align-items: center; gap: 12px;
+      color: #b0bac9; font-size: 11px; margin: 4px 0;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ""; flex: 1; height: 1px; background: #e4eaf4;
+    }
+
+    /* footer link */
+    .auth-footer { margin-top: 20px; text-align: center; color: var(--muted); font-size: 13px; }
+    .auth-footer a { color: var(--blue); font-weight: 700; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ─── */
+    @media (max-width: 860px) {
+      html, body { overflow: auto; height: auto; }
+      .auth-left { display: none; }
+      .auth-right {
+        margin-left: 0;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        padding: 40px 24px;
+        background: linear-gradient(160deg, #e8f1fd 0%, #f5f7fb 100%);
+      }
+    }
+    @media (max-width: 480px) {
+      .auth-right { padding: 32px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left decorative panel -->
+  <div class="auth-left" aria-hidden="true">
+    <div class="auth-left-inner">
+      <a class="auth-brand" href="login.html">
+        <span class="auth-brand-icon"><img src="./jbrains-tech-logo.jpeg" alt="" /></span>
+        <span><strong>Jbrains.Tech</strong><small>Student Study Planner</small></span>
+      </a>
+      <span class="auth-hero-tag">✦ STUDY SMARTER</span>
+      <h1>Your personal<br>academic command<br>centre.</h1>
+      <p>Track assignments, manage deadlines, log lectures, and analyse your study progress — all in one place.</p>
+      <div class="auth-features">
+        <div class="auth-feature">
+          <span class="auth-feature-icon">☷</span>
+          <div class="auth-feature-text">
+            <strong>Task Management</strong>
+            <span>Add, prioritise, and complete study tasks</span>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-icon">◷</span>
+          <div class="auth-feature-text">
+            <strong>Study Timer</strong>
+            <span>Focused Pomodoro-style sessions</span>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-icon">◌</span>
+          <div class="auth-feature-text">
+            <strong>Insights</strong>
+            <span>Visual progress across all your courses</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="auth-right">
+    <div class="auth-form-shell">
+
+      <div class="auth-form-header">
+        <h2>Welcome back</h2>
+        <p>Sign in to your study planner account.</p>
+      </div>
+
+      <!-- Logged-out success notice -->
+      <div class="auth-notice auth-notice--success" id="logout-notice" hidden role="status">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zm3.3 5.8-3.8 5a.75.75 0 0 1-1.1.1L6.2 10.6a.75.75 0 1 1 1.1-1l1.6 1.7 3.3-4.4a.75.75 0 1 1 1.2.9z"/></svg>
+        You have been logged out successfully.
+      </div>
+
+      <!-- Registration success notice -->
+      <div class="auth-notice auth-notice--success" id="reg-notice" hidden role="status">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zm3.3 5.8-3.8 5a.75.75 0 0 1-1.1.1L6.2 10.6a.75.75 0 1 1 1.1-1l1.6 1.7 3.3-4.4a.75.75 0 1 1 1.2.9z"/></svg>
+        Account created! Sign in below to get started.
+      </div>
+
+      <!-- Error banner -->
+      <div class="auth-notice auth-notice--error" id="form-error-banner" hidden role="alert">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zm-.75 4.75a.75.75 0 0 1 1.5 0v4a.75.75 0 0 1-1.5 0v-4zm.75 7.25a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+        <span id="form-error-text">Invalid email or password.</span>
+      </div>
+
+      <form class="auth-form" id="login-form" novalidate>
+
+        <div class="form-group">
+          <label for="login-email">Email address <span class="req" aria-hidden="true">*</span></label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+              <rect x="2.5" y="4.5" width="15" height="11" rx="2" ry="2"/>
+              <path d="M2.5 7l7.09 4.6a1 1 0 0 0 1.08 0L17.5 7"/>
+            </svg>
+            <input id="login-email" name="email" type="email" placeholder="you@example.com"
+              autocomplete="email" inputmode="email" required />
+          </div>
+          <span class="field-err" id="email-error" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password <span class="req" aria-hidden="true">*</span></label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 2a5 5 0 0 0-5 5v1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-1V7a5 5 0 0 0-5-5zm-3 6V7a3 3 0 0 1 6 0v1H7zm3 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </svg>
+            <input id="login-password" name="password" type="password"
+              placeholder="Enter your password" autocomplete="current-password" required />
+            <button class="pw-toggle" type="button" id="toggle-password" aria-label="Show password" aria-pressed="false">
+              <svg id="eye-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10z"/>
+                <circle cx="10" cy="10" r="2.5"/>
+              </svg>
+            </button>
+          </div>
+          <span class="field-err" id="password-error" role="alert"></span>
+        </div>
+
+        <div class="forgot-row">
+          <button class="forgot-btn" type="button" id="forgot-password-btn">Forgot password?</button>
+        </div>
+
+        <button class="auth-submit" type="submit" id="login-submit-btn">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn-label">Sign In</span>
+        </button>
+
+      </form>
+
+      <div class="auth-divider">or</div>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="register.html">Register here</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ── Notices (auto-dismiss after 3s) ──────────────────────────────────────
+    const params = new URLSearchParams(window.location.search);
+    const logoutNotice = document.getElementById("logout-notice");
+    const regNotice    = document.getElementById("reg-notice");
+
+    function autoDismiss(el) {
+      el.hidden = false;
+      setTimeout(() => {
+        el.style.transition = "opacity .4s ease";
+        el.style.opacity = "0";
+        setTimeout(() => { el.hidden = true; el.style.opacity = ""; }, 420);
+      }, 3000);
+    }
+
+    if (params.get("logged_out") === "1") {
+      autoDismiss(logoutNotice);
+      history.replaceState(null, "", window.location.pathname);
+    }
+    if (params.get("registered") === "1") {
+      autoDismiss(regNotice);
+      history.replaceState(null, "", window.location.pathname);
+    }
+
+    // ── Password toggle ───────────────────────────────────────────────────────
+    const passwordInput = document.getElementById("login-password");
+    const toggleBtn     = document.getElementById("toggle-password");
+    const eyeIcon       = document.getElementById("eye-icon");
+    const EYE_OPEN   = `<path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10z"/><circle cx="10" cy="10" r="2.5"/>`;
+    const EYE_CLOSED = `<path d="M3 3l14 14M10 4.5C5.5 4.5 2 10 2 10s.9 1.6 2.5 3M7.5 15.2C8.3 15.4 9.1 15.5 10 15.5c4.5 0 8-5.5 8-5.5s-.9-1.6-2.5-3"/><circle cx="10" cy="10" r="2.5"/>`;
+
+    toggleBtn.addEventListener("click", () => {
+      const showing = passwordInput.type === "text";
+      passwordInput.type = showing ? "password" : "text";
+      eyeIcon.innerHTML  = showing ? EYE_OPEN : EYE_CLOSED;
+      toggleBtn.setAttribute("aria-pressed", String(!showing));
+      toggleBtn.setAttribute("aria-label",   showing ? "Show password" : "Hide password");
+    });
+
+    // ── Form submission ───────────────────────────────────────────────────────
+    const form            = document.getElementById("login-form");
+    const emailInput      = document.getElementById("login-email");
+    const emailError      = document.getElementById("email-error");
+    const passwordError   = document.getElementById("password-error");
+    const errorBanner     = document.getElementById("form-error-banner");
+    const errorBannerText = document.getElementById("form-error-text");
+    const submitBtn       = document.getElementById("login-submit-btn");
+
+    function clearErrors() {
+      emailError.textContent    = "";
+      passwordError.textContent = "";
+      emailInput.classList.remove("is-error");
+      passwordInput.classList.remove("is-error");
+      errorBanner.hidden = true;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const email    = emailInput.value.trim();
+      const password = passwordInput.value;
+      let valid      = true;
+
+      if (!email) {
+        emailInput.classList.add("is-error");
+        emailError.textContent = "Email address is required.";
+        emailInput.focus();
+        valid = false;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        emailInput.classList.add("is-error");
+        emailError.textContent = "Please enter a valid email address.";
+        emailInput.focus();
+        valid = false;
+      }
+
+      if (!password) {
+        passwordInput.classList.add("is-error");
+        passwordError.textContent = "Password is required.";
+        if (valid) passwordInput.focus();
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      submitBtn.disabled = true;
+      submitBtn.classList.add("loading");
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Invalid email or password.");
+        }
+
+        // Persist display name so index.html can greet the user
+        localStorage.setItem("loggedInUser", JSON.stringify({
+          name:  data.name,
+          email: data.email,
+        }));
+
+        window.location.href = "index.html";
+      } catch (err) {
+        errorBannerText.textContent = err.message || "Invalid email or password. Please try again.";
+        errorBanner.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("loading");
+      }
+    });
+
+    // ── Forgot password ───────────────────────────────────────────────────────
+    document.getElementById("forgot-password-btn").addEventListener("click", () => {
+      const email = emailInput.value.trim();
+      alert(email
+        ? `A password reset link would be sent to ${email}.`
+        : "Enter your email address first, then click Forgot password."
+      );
+    });
+  </script>
+</body>
+</html>
